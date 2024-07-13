@@ -1,0 +1,82 @@
+services:
+  validator-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    network_mode: host
+    environment:
+      NODE_NAME: validator-1
+      SUBNET_ID: ${SUBNET_ID}
+      PARENT_REGISTRY: ${PARENT_REGISTRY}
+      PARENT_GATEWAY: ${PARENT_GATEWAY}
+      PRIVATE_KEY_PATH: /root/.ipc/validator_1.sk
+      CMT_P2P_HOST_PORT: 26756
+      CMT_RPC_HOST_PORT: 26757
+      ETHAPI_HOST_PORT: 8645
+      RESOLVER_HOST_PORT: 26755
+      FM_PULL_SKIP: 1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.ipc:/root/.ipc
+      - ./.env:/root/.env
+    entrypoint: /app/capture-ids.sh
+
+  validator-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    network_mode: host
+    environment:
+      NODE_NAME: validator-2
+      SUBNET_ID: ${SUBNET_ID}
+      PARENT_REGISTRY: ${PARENT_REGISTRY}
+      PARENT_GATEWAY: ${PARENT_GATEWAY}
+      PRIVATE_KEY_PATH: /root/.ipc/validator_2.sk
+      CMT_P2P_HOST_PORT: 26856
+      CMT_RPC_HOST_PORT: 26857
+      ETHAPI_HOST_PORT: 8745
+      RESOLVER_HOST_PORT: 26855
+      BOOTSTRAPS: ${BOOTSTRAP_NODE_ID}@validator-1-cometbft:26656
+      RESOLVER_BOOTSTRAPS: /dns/validator-1-fendermint/tcp/26655/p2p/${BOOTSTRAP_PEER_ID}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.ipc:/root/.ipc
+    command:
+      [
+        "cd app/fendermint && cargo make --makefile ./infra/fendermint/Makefile.toml child-validator && tail -f /dev/null"
+      ]
+
+  validator-3:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    network_mode: host
+    environment:
+      NODE_NAME: validator-3
+      SUBNET_ID: ${SUBNET_ID}
+      PARENT_REGISTRY: ${PARENT_REGISTRY}
+      PARENT_GATEWAY: ${PARENT_GATEWAY}
+      PRIVATE_KEY_PATH: /root/.ipc/validator_3.sk
+      CMT_P2P_HOST_PORT: 26656
+      CMT_RPC_HOST_PORT: 26657
+      ETHAPI_HOST_PORT: 8545
+      RESOLVER_HOST_PORT: 26955
+      BOOTSTRAPS: ${BOOTSTRAP_NODE_ID}@validator-1-cometbft:26656
+      RESOLVER_BOOTSTRAPS: /dns/validator-1-fendermint/tcp/26655/p2p/${BOOTSTRAP_PEER_ID}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.ipc:/root/.ipc
+    command:
+      [
+        "cd app/fendermint && cargo make --makefile ./infra/fendermint/Makefile.toml child-validator && tail -f /dev/null"
+      ]
+
+  ipc-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile.ipc
+    network_mode: host
+    volumes:
+      - ~/.ipc:/root/.ipc
+      - ./.env:/root/.env
+    entrypoint: [ "/app/setup.sh" ]

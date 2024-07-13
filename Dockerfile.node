@@ -1,0 +1,79 @@
+# Stage 1: Build the IPC project
+FROM rust:slim as builder
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    clang \
+    cmake \
+    pkg-config \
+    libssl-dev \
+    protobuf-compiler \
+    git \
+    curl \
+    hwloc \
+    libhwloc-dev \
+    wget \
+    ca-certificates \
+    gnupg \
+    jq \
+    ocl-icd-opencl-dev \
+    mesa-opencl-icd \
+    bzr \
+    npm \
+    lsb-release \
+    software-properties-common
+
+# Install Rust target
+RUN rustup target add wasm32-unknown-unknown && rustup default stable
+
+# Install cargo-make
+RUN cargo install --force cargo-make
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Install Foundry
+RUN curl -L https://foundry.paradigm.xyz | bash
+ENV PATH="/root/.foundry/bin:${PATH}"
+RUN foundryup
+
+# Clone and build IPC
+WORKDIR /app
+RUN git clone https://github.com/consensus-shipyard/ipc.git .
+
+# Build the IPC project
+RUN make
+
+# Start with a new, clean base image to reduce size
+FROM docker:cli
+
+# Install runtime dependencies
+RUN apk update && apk add --no-cache \
+    curl \
+    build-base \
+    gcc \
+    bash \
+    jq \
+    libgcc \
+    libstdc++ \
+    binutils
+
+# Install Rust
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install cargo-make
+RUN cargo install --force cargo-make
+
+# COPY --from=builder /app/local/cargo/bin /usr/local/cargo/bin
+COPY --from=builder /app /app/fendermint
+COPY ./capture-ids.sh /app
+
+# Set executable permissions for entrypoint scripts
+RUN chmod +x /app/*.sh
+# Pre-populate the Rust cargo cache
+RUN cd app/fendermint && cargo make --makefile ./infra/fendermint/Makefile.toml info
+
+# Set the entrypoint
+ENTRYPOINT ["/bin/bash", "-c"]
