@@ -23,10 +23,13 @@ FROM docker:cli
 # Install runtime dependencies
 RUN apk update && apk add --no-cache \
     curl \
+    build-base \
+    gcc \
     bash \
     jq \
     libgcc \
-    gcc \
+    libstdc++ \
+    binutils \ 
     npm
 
 
