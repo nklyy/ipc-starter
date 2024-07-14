@@ -3,35 +3,7 @@ FROM rust:slim as builder
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    clang \
-    cmake \
-    pkg-config \
-    libssl-dev \
-    protobuf-compiler \
-    git \
-    curl \
-    hwloc \
-    libhwloc-dev \
-    wget \
-    ca-certificates \
-    gnupg \
-    jq \
-    ocl-icd-opencl-dev \
-    mesa-opencl-icd \
-    bzr \
-    npm \
-    lsb-release \
-    software-properties-common
-
-# Install Rust target
-RUN rustup target add wasm32-unknown-unknown && rustup default stable
-
-# Install cargo-make
-RUN cargo install --force cargo-make
-
-# Install pnpm
-RUN npm install -g pnpm
+    build-essential clang cmake pkg-config libssl-dev protobuf-compiler git curl jq npm
 
 # Install Foundry
 RUN curl -L https://foundry.paradigm.xyz | bash
@@ -56,23 +28,13 @@ RUN apt-get update && apt-get install -y \
     bash \
     jq \
     libgcc-s1 \
-    libstdc++6 \
-    docker.io
-
-# Install Rust
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-
-# Install cargo-make
-RUN cargo install --force cargo-make
+    libstdc++6
 
 # Create necessary directories
-RUN mkdir -p /app/fendermint
+WORKDIR /app
 
 # Copy built files from builder
 COPY --from=builder /app/target/release/ipc-cli /usr/local/bin/ipc-cli
-COPY --from=builder /app /app/fendermint
-COPY ./setup.sh /app
 
 # Verify binary is in place and executable
 RUN chmod +x /usr/local/bin/ipc-cli
@@ -80,11 +42,11 @@ RUN chmod +x /usr/local/bin/ipc-cli
 # Set any environment variables needed
 ENV PATH="/usr/local/bin:${PATH}"
 
+# Copy setup.sh
+COPY ./setup.sh /app
+
 # Set executable permissions for entrypoint scripts
 RUN chmod +x /app/*.sh
-
-# Pre-populate the Rust cargo cache
-RUN cd app/fendermint && cargo make --makefile ./infra/fendermint/Makefile.toml info
 
 # Set the entrypoint
 ENTRYPOINT ["/bin/bash", "-c"]
