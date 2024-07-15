@@ -128,10 +128,18 @@ else
   exit 1
 fi
 
-echo "SUBNET_ID seted in .env file"
-echo "Edit your /root/.ipc/config.toml file to include your new subnet"
-# echo "To start a boostrap node run: docker compose up bootstrap"
-# echo "To start the validators run: docker compose up validator1 validator2 validator3"
+# Uncomment and update the subnet template in config.toml
+sed -i '' -e "/# \[\[subnets\]\]/,/# registry_addr/ {
+    s/^# //
+    s|id = \"/r314159/<SUBNET_ID>\"|id = \"$SUBNET_ID\"|
+    s|<RPC_ADDR>|localhost:8545/|
+}" "$config_file"
+
+echo "Initialization complete. Validators have joined the subnet."
+echo "Subnet created: ${SUBNET_ID}"
+echo "IPC-CLI installed successfully."
+echo "SUBNET_ID set in .env file"
+echo "/root/.ipc/config.toml has modified to you new SUBNET_ID"
 
 # Keep the container running
 tail -f /dev/null
