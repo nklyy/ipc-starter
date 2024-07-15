@@ -1,5 +1,3 @@
-Sure, here's a detailed step-by-step guide on setting up IPC in a Docker environment.
-
 ## Prerequisites
 
 1. **Docker**: Ensure Docker is installed on your server. You can download it from [Docker's official website](https://www.docker.com/get-started).
