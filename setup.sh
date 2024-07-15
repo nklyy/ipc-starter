@@ -42,20 +42,20 @@ fi
 echo
 
 # Create 3 new wallets
-if [ -f root/.ipc/validator_1.sk ]; then
-    ADDRESS1=$(ipc-cli wallet import --wallet-type evm --private-key $(cat root/.ipc/validator_1.sk) | tr -d '"')
+if [ -f /root/.ipc/validator_1.sk ]; then
+    ADDRESS1=$(ipc-cli wallet import --wallet-type evm --private-key $(cat /root/.ipc/validator_1.sk) | tr -d '"')
 else
     ADDRESS1=$(ipc-cli wallet new --wallet-type evm | tr -d '"')
 fi
 
-if [ -f root/.ipc/validator_2.sk ]; then
-    ADDRESS2=$(ipc-cli wallet import --wallet-type evm --private-key $(cat root/.ipc/validator_2.sk) | tr -d '"')
+if [ -f /root/.ipc/validator_2.sk ]; then
+    ADDRESS2=$(ipc-cli wallet import --wallet-type evm --private-key $(cat /root/.ipc/validator_2.sk) | tr -d '"')
 else
     ADDRESS2=$(ipc-cli wallet new --wallet-type evm | tr -d '"')
 fi
 
-if [ -f root/.ipc/validator_3.sk ]; then
-    ADDRESS3=$(ipc-cli wallet import --wallet-type evm --private-key $(cat root/.ipc/validator_3.sk) | tr -d '"')
+if [ -f /root/.ipc/validator_3.sk ]; then
+    ADDRESS3=$(ipc-cli wallet import --wallet-type evm --private-key $(cat /root/.ipc/validator_3.sk) | tr -d '"')
 else
     ADDRESS3=$(ipc-cli wallet new --wallet-type evm| tr -d '"')
 fi
@@ -110,9 +110,9 @@ echo
 
 # Export the validator private keys to files
 echo "Exporting private keys"
-ipc-cli wallet export --wallet-type evm --address $ADDRESS1 --hex > root/.ipc/validator_1.sk
-ipc-cli wallet export --wallet-type evm --address $ADDRESS2 --hex > root/.ipc/validator_2.sk
-ipc-cli wallet export --wallet-type evm --address $ADDRESS3 --hex > root/.ipc/validator_3.sk
+ipc-cli wallet export --wallet-type evm --address $ADDRESS1 --hex > /root/.ipc/validator_1.sk
+ipc-cli wallet export --wallet-type evm --address $ADDRESS2 --hex > /root/.ipc/validator_2.sk
+ipc-cli wallet export --wallet-type evm --address $ADDRESS3 --hex > /root/.ipc/validator_3.sk
 echo
 
 # Output completion message
@@ -129,7 +129,7 @@ else
 fi
 
 echo "SUBNET_ID seted in .env file"
-echo "Edit your root/.ipc/config.toml file to include your new subnet"
+echo "Edit your /root/.ipc/config.toml file to include your new subnet"
 # echo "To start a boostrap node run: docker compose up bootstrap"
 # echo "To start the validators run: docker compose up validator1 validator2 validator3"
 

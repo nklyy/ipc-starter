@@ -1,4 +1,23 @@
 services:
+  bootstrap:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    network_mode: host
+    environment:
+      NODE_NAME: bootstrap
+      SUBNET_ID: ${SUBNET_ID}
+      PARENT_REGISTRY: ${PARENT_REGISTRY}
+      PARENT_GATEWAY: ${PARENT_GATEWAY}
+      PRIVATE_KEY_PATH: /root/.ipc/validator_1.sk
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.ipc:/root/.ipc
+    command:
+      [
+        "cargo make --makefile ./infra/fendermint/Makefile.toml bootstrap && cargo make --makefile ./infra/fendermint/Makefile.toml bootstrap-down"
+      ]
+
   validator-1:
     build:
       context: .
@@ -10,10 +29,10 @@ services:
       PARENT_REGISTRY: ${PARENT_REGISTRY}
       PARENT_GATEWAY: ${PARENT_GATEWAY}
       PRIVATE_KEY_PATH: /root/.ipc/validator_1.sk
-      CMT_P2P_HOST_PORT: 26756
-      CMT_RPC_HOST_PORT: 26757
-      ETHAPI_HOST_PORT: 8645
-      RESOLVER_HOST_PORT: 26755
+      CMT_P2P_HOST_PORT: 26656
+      CMT_RPC_HOST_PORT: 26657
+      ETHAPI_HOST_PORT: 8545
+      RESOLVER_HOST_PORT: 26655
       FM_PULL_SKIP: 1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -32,10 +51,10 @@ services:
       PARENT_REGISTRY: ${PARENT_REGISTRY}
       PARENT_GATEWAY: ${PARENT_GATEWAY}
       PRIVATE_KEY_PATH: /root/.ipc/validator_2.sk
-      CMT_P2P_HOST_PORT: 26856
-      CMT_RPC_HOST_PORT: 26857
-      ETHAPI_HOST_PORT: 8745
-      RESOLVER_HOST_PORT: 26855
+      CMT_P2P_HOST_PORT: 26756
+      CMT_RPC_HOST_PORT: 26757
+      ETHAPI_HOST_PORT: 8645
+      RESOLVER_HOST_PORT: 26755
       BOOTSTRAPS: ${BOOTSTRAP_NODE_ID}@validator-1-cometbft:26656
       RESOLVER_BOOTSTRAPS: /dns/validator-1-fendermint/tcp/26655/p2p/${BOOTSTRAP_PEER_ID}
     volumes:
@@ -43,7 +62,7 @@ services:
       - ~/.ipc:/root/.ipc
     command:
       [
-        "cd app/fendermint && cargo make --makefile ./infra/fendermint/Makefile.toml child-validator && tail -f /dev/null"
+        "cargo make --makefile ./infra/fendermint/Makefile.toml child-validator && tail -f /dev/null"
       ]
 
   validator-3:
@@ -57,10 +76,10 @@ services:
       PARENT_REGISTRY: ${PARENT_REGISTRY}
       PARENT_GATEWAY: ${PARENT_GATEWAY}
       PRIVATE_KEY_PATH: /root/.ipc/validator_3.sk
-      CMT_P2P_HOST_PORT: 26656
-      CMT_RPC_HOST_PORT: 26657
-      ETHAPI_HOST_PORT: 8545
-      RESOLVER_HOST_PORT: 26955
+      CMT_P2P_HOST_PORT: 26856
+      CMT_RPC_HOST_PORT: 26857
+      ETHAPI_HOST_PORT: 8745
+      RESOLVER_HOST_PORT: 26855
       BOOTSTRAPS: ${BOOTSTRAP_NODE_ID}@validator-1-cometbft:26656
       RESOLVER_BOOTSTRAPS: /dns/validator-1-fendermint/tcp/26655/p2p/${BOOTSTRAP_PEER_ID}
     volumes:
@@ -68,7 +87,7 @@ services:
       - ~/.ipc:/root/.ipc
     command:
       [
-        "cd app/fendermint && cargo make --makefile ./infra/fendermint/Makefile.toml child-validator && tail -f /dev/null"
+        "cargo make --makefile ./infra/fendermint/Makefile.toml child-validator && tail -f /dev/null"
       ]
 
   ipc-cli:

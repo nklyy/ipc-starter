@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # Run the original command and capture the output
-cd /app/fendermint
 echo "Creating validator..."
 bootstrap_output=$(cargo make --makefile ./infra/fendermint/Makefile.toml \
     -e NODE_NAME=${NODE_NAME} \

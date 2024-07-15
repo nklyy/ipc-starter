@@ -33,6 +33,8 @@ RUN apk update && apk add --no-cache \
     npm
 
 
+WORKDIR /app
+
 # Install Rust
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
@@ -41,14 +43,14 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo install --force cargo-make
 
 # Copy Rust and Cargo from the builder stage
-COPY --from=builder /app /app/fendermint
+COPY --from=builder /app /app
 COPY ./capture-ids.sh /app
 
 # Set executable permissions for entrypoint scripts
 RUN chmod +x /app/*.sh
 
 # Pre-populate the Rust cargo cache
-RUN cd app/fendermint && cargo make --makefile ./infra/fendermint/Makefile.toml info
+RUN cargo make --makefile ./infra/fendermint/Makefile.toml info
 
 # Set the entrypoint
 ENTRYPOINT ["/bin/bash", "-c"]
