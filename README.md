@@ -22,7 +22,7 @@ Next, use Docker Compose to start the IPC-CLI:
 docker-compose up ipc-cli
 ```
 
-Wait until you see the message `IPC-CLI installed successfully` and the following message:
+Wait until you see the message:
 
 ```
 For each address above go send some funds to it at the faucet at
@@ -34,6 +34,8 @@ For each address above go send some funds to it at the faucet at
 2. Visit [the faucet](https://faucet.calibnet.chainsafe-fil.io/funds.html).
 3. Paste each address one by one and request funds.
 4. Wait until all addresses are funded.
+5. Wait until subnet will created and addresses will join to subnet
+6. After message: **`Initialization complete`**. Feel free to go next step.
 
 ### 4. Run Bootstrap
 
