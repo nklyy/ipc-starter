@@ -115,28 +115,27 @@ ipc-cli wallet export --wallet-type evm --address $ADDRESS2 --hex > /root/.ipc/v
 ipc-cli wallet export --wallet-type evm --address $ADDRESS3 --hex > /root/.ipc/validator_3.sk
 echo
 
-# Output completion message
-echo "Initialization complete. Validators have joined the subnet."
-echo "Subnet created: ${SUBNET_ID}"
+# Trim SUBNET_ID
+SUBNET_ID_TRIMMED=$(echo "$SUBNET_ID" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
 # Ensure newline before appending SUBNET_ID
 if [ -w /root/.env ]; then
   echo "" >> /root/.env  # Add newline
-  echo "SUBNET_ID=$SUBNET_ID" >> /root/.env
+  echo "SUBNET_ID=$SUBNET_ID_TRIMMED" >> /root/.env
 else
   echo "Error: Cannot write to /root/.env"
   exit 1
 fi
 
 # Uncomment and update the subnet template in config.toml
-sed -i '' -e "/# \[\[subnets\]\]/,/# registry_addr/ {
+sed -i "/# \[\[subnets\]\]/,/# registry_addr/ {
     s/^# //
-    s|id = \"/r314159/<SUBNET_ID>\"|id = \"$SUBNET_ID\"|
-    s|<RPC_ADDR>|localhost:8545/|
+    s|id = \"/r314159/<SUBNET_ID>\"|id = \"$SUBNET_ID_TRIMMED\"|
+    s~provider_http = \"https://<RPC_ADDR>/\"~provider_http = \"http://localhost:8545/\"~
 }" "$config_file"
 
 echo "Initialization complete. Validators have joined the subnet."
-echo "Subnet created: ${SUBNET_ID}"
+echo "Subnet created: ${SUBNET_ID_TRIMMED}"
 echo "IPC-CLI installed successfully."
 echo "SUBNET_ID set in .env file"
 echo "/root/.ipc/config.toml has modified to you new SUBNET_ID"
