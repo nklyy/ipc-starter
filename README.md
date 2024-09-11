@@ -19,7 +19,7 @@ cd ipc-starter
 Next, use Docker Compose to start the IPC-CLI:
 
 ```bash
-docker-compose up ipc-cli
+docker compose up ipc-cli
 ```
 
 Wait until you see the message:
@@ -42,7 +42,7 @@ For each address above go send some funds to it at the faucet at
 Now, start the bootstrap process to pull all necessary libraries and dependencies:
 
 ```bash
-docker-compose up bootstrap
+docker compose up bootstrap
 ```
 
 Wait until the process completes successfully and exits with a `0` code.
@@ -52,7 +52,7 @@ Wait until the process completes successfully and exits with a `0` code.
 Once the bootstrap process is complete, start the first validator:
 
 ```bash
-docker-compose up validator-1
+docker compose up validator-1
 ```
 
 Wait until you see the message `Subnet is ready`.
@@ -62,8 +62,8 @@ Wait until you see the message `Subnet is ready`.
 Finally, start the remaining validators one by one:
 
 ```bash
-docker-compose up validator-2
-docker-compose up validator-3
+docker compose up validator-2
+docker compose up validator-3
 ```
 
 ### Summary of Commands
@@ -74,20 +74,20 @@ git clone https://github.com/nklyy/ipc-starter.git
 cd ipc-starter
 
 # Run IPC-CLI
-docker-compose up ipc-cli
+docker compose up ipc-cli
 
 # Fund addresses using the faucet
 # (Visit the faucet link and fund the addresses displayed in IPC-CLI logs)
 
 # Run bootstrap
-docker-compose up bootstrap
+docker compose up bootstrap
 
 # Start Validator-1
-docker-compose up validator-1
+docker compose up validator-1
 
 # Start remaining validators
-docker-compose up validator-2
-docker-compose up validator-3
+docker compose up validator-2
+docker compose up validator-3
 ```
 
 By following these steps, you should be able to set up IPC in a Docker environment successfully. If you encounter any issues, make sure to check the logs for error messages and ensure all prerequisites are met.
